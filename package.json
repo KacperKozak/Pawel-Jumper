@@ -1,0 +1,97 @@
+{
+  "version": "0.1.0",
+  "name": "pawel-jumper",
+  "displayName": "Pawel Jumper",
+  "publisher": "code-cooking",
+  "description": "A minimal VS Code extension template.",
+  "icon": "logo/logo.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KacperKozak/Pawel-Jumper"
+  },
+  "engines": {
+    "vscode": "^1.79.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:pawel-jumper.move-up",
+    "onCommand:pawel-jumper.move-down",
+    "onCommand:pawel-jumper.selected-prev",
+    "onCommand:pawel-jumper.selected-next"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "pawel-jumper.move-up",
+        "title": "Pawel Jumper: Move Up"
+      },
+      {
+        "command": "pawel-jumper.move-down",
+        "title": "Pawel Jumper: Move Down"
+      },
+      {
+        "command": "pawel-jumper.selected-prev",
+        "title": "Pawel Jumper: Select Previous"
+      },
+      {
+        "command": "pawel-jumper.selected-next",
+        "title": "Pawel Jumper: Select Next"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "pawel-jumper.move-up",
+        "mac": "shift+alt+up",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "pawel-jumper.move-down",
+        "mac": "shift+alt+down",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "start": "bun run compile && bun run vscode",
+    "vscode": "code --extensionDevelopmentPath=. --user-data-dir=.vscode-pawel-jumper-dev --extensions-dir=.vscode-pawel-jumper-extensions",
+    "compile": "bun x tsc -p ./",
+    "watch": "bun x tsc -watch -p ./",
+    "lint": "oxlint --fix",
+    "format": "prettier --write .",
+    "ts": "bun x tsc --noEmit",
+    "test": "echo 'No unit tests'",
+    "test:e2e": "node ./out/test/runTest.js",
+    "prepare": "husky",
+    "lint-staged": "lint-staged"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20",
+    "@types/vscode": "^1.79.0",
+    "@vscode/test-electron": "^2.3.2",
+    "glob": "^8.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
+    "mocha": "^10.2.0",
+    "oxlint": "^1.13.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.1.3"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "oxlint --fix",
+      "bash -lc 'bun run ts'"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "packageManager": "bun@1.2.19"
+}
