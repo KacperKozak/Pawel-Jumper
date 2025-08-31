@@ -1,6 +1,11 @@
 import { escapeRegExp } from '../utils/regexp'
 import { isBlankLine } from '../utils/string'
 
+export interface OccurrencePosition {
+    line: number
+    character: number
+}
+
 export const getBlankLineIndicesFromLines = (lines: string[]): number[] => {
     const indices: number[] = []
     for (let i = 0; i < lines.length; i++) {
@@ -12,8 +17,8 @@ export const getBlankLineIndicesFromLines = (lines: string[]): number[] => {
 export const findOccurrencesInLines = (
     lines: string[],
     term: string,
-): { line: number; character: number }[] => {
-    const occurrences: { line: number; character: number }[] = []
+): OccurrencePosition[] => {
+    const occurrences: OccurrencePosition[] = []
     const isWordish = /^[A-Za-z0-9_]+$/.test(term)
     const pattern = isWordish ? `\\b${escapeRegExp(term)}\\b` : escapeRegExp(term)
     const regex = new RegExp(pattern, 'g')
@@ -27,6 +32,34 @@ export const findOccurrencesInLines = (
         }
     }
     return occurrences
+}
+
+export const findNextOccurrenceIndexAfterBase = (
+    occurrences: OccurrencePosition[],
+    baseLine: number,
+    baseCharacter: number,
+): number => {
+    for (let i = 0; i < occurrences.length; i++) {
+        const o = occurrences[i]
+        if (o.line > baseLine || (o.line === baseLine && o.character > baseCharacter)) {
+            return i
+        }
+    }
+    return -1
+}
+
+export const findPreviousOccurrenceIndexBeforeBase = (
+    occurrences: OccurrencePosition[],
+    baseLine: number,
+    baseCharacter: number,
+): number => {
+    for (let i = occurrences.length - 1; i >= 0; i--) {
+        const o = occurrences[i]
+        if (o.line < baseLine || (o.line === baseLine && o.character < baseCharacter)) {
+            return i
+        }
+    }
+    return -1
 }
 
 export const findNextBlankLineIndexOrEnd = (

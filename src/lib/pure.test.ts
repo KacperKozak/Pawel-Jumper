@@ -5,6 +5,8 @@ import {
     findOccurrencesInLines,
     findNextBlankLineIndexOrEnd,
     findPreviousBlankLineIndexOrStart,
+    findNextOccurrenceIndexAfterBase,
+    findPreviousOccurrenceIndexBeforeBase,
 } from './pure'
 
 const sampleReactComponent = dedent`
@@ -38,6 +40,16 @@ describe('pure', () => {
         const occ = findOccurrencesInLines(sampleReactComponent, 'useEffect')
         expect(occ.length).toBeGreaterThan(0)
         expect(occ[0].line).toBeGreaterThanOrEqual(0)
+    })
+
+    it('finds next/previous occurrence indices around a base', () => {
+        const occ = findOccurrencesInLines(['alpha beta', 'beta gamma', 'alpha'], 'alpha')
+        // occurrences at (0,0) and (2,0)
+        expect(findNextOccurrenceIndexAfterBase(occ, 0, 0)).toBe(1)
+        expect(findNextOccurrenceIndexAfterBase(occ, 0, -1)).toBe(0)
+        expect(findNextOccurrenceIndexAfterBase(occ, 2, 0)).toBe(-1)
+        expect(findPreviousOccurrenceIndexBeforeBase(occ, 2, 0)).toBe(0)
+        expect(findPreviousOccurrenceIndexBeforeBase(occ, 0, 0)).toBe(-1)
     })
 
     it('does not crash on empty input', () => {

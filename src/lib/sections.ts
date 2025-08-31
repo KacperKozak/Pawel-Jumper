@@ -1,26 +1,20 @@
 import * as vscode from 'vscode'
 import { isBlankLine } from '../utils/string'
-import { escapeRegExp } from '../utils/regexp'
+import {
+    findOccurrencesInLines,
+    findNextOccurrenceIndexAfterBase,
+    findPreviousOccurrenceIndexBeforeBase,
+} from './pure'
 
 export const findOccurrences = (
     document: vscode.TextDocument,
     term: string,
 ): { line: number; character: number }[] => {
-    const occurrences: { line: number; character: number }[] = []
-    const isWordish = /^[A-Za-z0-9_]+$/.test(term)
-    const pattern = isWordish ? `\\b${escapeRegExp(term)}\\b` : escapeRegExp(term)
-    const regex = new RegExp(pattern, 'g')
-
+    const lines: string[] = []
     for (let i = 0; i < document.lineCount; i++) {
-        const text = document.lineAt(i).text
-        regex.lastIndex = 0
-        let match: RegExpExecArray | null
-        while ((match = regex.exec(text)) !== null) {
-            occurrences.push({ line: i, character: match.index })
-            if (match.index === regex.lastIndex) regex.lastIndex++
-        }
+        lines.push(document.lineAt(i).text)
     }
-    return occurrences
+    return findOccurrencesInLines(lines, term)
 }
 
 export const jumpToNextOccurrence = (editor: vscode.TextEditor, term: string) => {
@@ -29,13 +23,9 @@ export const jumpToNextOccurrence = (editor: vscode.TextEditor, term: string) =>
 
     const sel = editor.selection
     const base = sel.isEmpty ? sel.active : sel.end
-    const after = occurrences.find(
-        (o) =>
-            o.line > base.line || (o.line === base.line && o.character > base.character),
-    )
-    const target = after ?? occurrences[occurrences.length - 1]
-    // If no "after" found, do nothing (no wrap)
-    if (!after) return
+    const idx = findNextOccurrenceIndexAfterBase(occurrences, base.line, base.character)
+    if (idx < 0) return
+    const target = occurrences[idx]
     const start = new vscode.Position(target.line, target.character)
     const end = new vscode.Position(target.line, target.character + term.length)
     editor.selection = new vscode.Selection(start, end)
@@ -48,20 +38,15 @@ export const jumpToPreviousOccurrence = (editor: vscode.TextEditor, term: string
 
     const sel = editor.selection
     const base = sel.isEmpty ? sel.active : sel.start
-    let found: { line: number; character: number } | undefined
-    for (let i = occurrences.length - 1; i >= 0; i--) {
-        const o = occurrences[i]
-        if (
-            o.line < base.line ||
-            (o.line === base.line && o.character < base.character)
-        ) {
-            found = o
-            break
-        }
-    }
-    if (!found) return // no wrap
-    const start = new vscode.Position(found.line, found.character)
-    const end = new vscode.Position(found.line, found.character + term.length)
+    const idx = findPreviousOccurrenceIndexBeforeBase(
+        occurrences,
+        base.line,
+        base.character,
+    )
+    if (idx < 0) return
+    const target = occurrences[idx]
+    const start = new vscode.Position(target.line, target.character)
+    const end = new vscode.Position(target.line, target.character + term.length)
     editor.selection = new vscode.Selection(start, end)
     editor.revealRange(new vscode.Range(start, end), vscode.TextEditorRevealType.InCenter)
 }
