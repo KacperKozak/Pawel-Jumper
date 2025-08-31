@@ -127,3 +127,41 @@ export const getBlankLineIndicesFromLines = (lines: string[]): number[] => {
     }
     return indices
 }
+
+export const selectToPreviousBlankLine = (editor: vscode.TextEditor) => {
+    const doc = editor.document
+    const current = editor.selection.active
+    const anchor = editor.selection.isEmpty ? current : editor.selection.anchor
+    let target: vscode.Position | undefined
+    for (let i = current.line - 1; i >= 0; i--) {
+        if (isBlankLine(doc.lineAt(i).text)) {
+            target = new vscode.Position(i, 0)
+            break
+        }
+    }
+    if (!target) return
+    editor.selection = new vscode.Selection(anchor, target)
+    editor.revealRange(
+        new vscode.Range(anchor, target),
+        vscode.TextEditorRevealType.InCenter,
+    )
+}
+
+export const selectToNextBlankLine = (editor: vscode.TextEditor) => {
+    const doc = editor.document
+    const current = editor.selection.active
+    const anchor = editor.selection.isEmpty ? current : editor.selection.anchor
+    let target: vscode.Position | undefined
+    for (let i = current.line + 1; i < doc.lineCount; i++) {
+        if (isBlankLine(doc.lineAt(i).text)) {
+            target = new vscode.Position(i, 0)
+            break
+        }
+    }
+    if (!target) return
+    editor.selection = new vscode.Selection(anchor, target)
+    editor.revealRange(
+        new vscode.Range(anchor, target),
+        vscode.TextEditorRevealType.InCenter,
+    )
+}

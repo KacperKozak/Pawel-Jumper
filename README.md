@@ -11,12 +11,23 @@ Jump fast around your files without thinking:
 
 It’s named after a classic Polish internet meme “Paweł Jumper” — a legendary 68-second saga about ambition, momentum, and gravity. This extension aims for the first two and avoids the third. If you’re curious, tutaj „to już się kameruje”: [`Paweł Jumper` on Wikipedia](https://pl.wikipedia.org/wiki/Pawe%C5%82_Jumper).
 
-### Default keybindings (macOS)
+### Default keybindings
 
-- Pawel Jumper: Move Up — Shift+Alt+Up
-- Pawel Jumper: Move Down — Shift+Alt+Down
+MacOS:
 
-Use the Command Palette to invoke the commands by name on other platforms, or add your own keybindings.
+- Pawel Jumper: Hop Up — Cmd+Ctrl+Up
+- Pawel Jumper: Hop Down — Cmd+Ctrl+Down
+- Pawel Jumper: Select Up — Shift+Cmd+Ctrl+Up
+- Pawel Jumper: Select Down — Shift+Cmd+Ctrl+Down
+
+Windows/Linux:
+
+- Pawel Jumper: Hop Up — Ctrl+Alt+PageUp
+- Pawel Jumper: Hop Down — Ctrl+Alt+PageDown
+- Pawel Jumper: Select Up — Shift+Ctrl+Alt+PageUp
+- Pawel Jumper: Select Down — Shift+Ctrl+Alt+PageDown
+
+Use the Command Palette to invoke the commands by name or customize keybindings in your settings.
 
 ## Development
 

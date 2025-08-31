@@ -16,31 +16,53 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:pawel-jumper.hop-prev",
-    "onCommand:pawel-jumper.hop-next"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "pawel-jumper.hop-prev",
-        "title": "Pawel Jumper: Hop Previous"
+        "command": "pawel-jumper.hop-up",
+        "title": "Pawel Jumper: Hop Up"
       },
       {
-        "command": "pawel-jumper.hop-next",
-        "title": "Pawel Jumper: Hop Next"
+        "command": "pawel-jumper.hop-down",
+        "title": "Pawel Jumper: Hop Down"
+      },
+      {
+        "command": "pawel-jumper.select-up",
+        "title": "Pawel Jumper: Select Up to Previous Blank Line"
+      },
+      {
+        "command": "pawel-jumper.select-down",
+        "title": "Pawel Jumper: Select Down to Next Blank Line"
       }
     ],
     "keybindings": [
       {
-        "command": "pawel-jumper.hop-prev",
-        "mac": "shift+alt+up",
+        "command": "pawel-jumper.hop-up",
+        "mac": "cmd+ctrl+up",
+        "win": "ctrl+alt+PageUp",
+        "linux": "ctrl+alt+PageUp",
         "when": "editorTextFocus"
       },
       {
-        "command": "pawel-jumper.hop-next",
-        "mac": "shift+alt+down",
+        "command": "pawel-jumper.hop-down",
+        "mac": "cmd+ctrl+down",
+        "win": "ctrl+alt+PageDown",
+        "linux": "ctrl+alt+PageDown",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "pawel-jumper.select-up",
+        "mac": "shift+cmd+ctrl+up",
+        "win": "shift+ctrl+alt+PageUp",
+        "linux": "shift+ctrl+alt+PageUp",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "pawel-jumper.select-down",
+        "mac": "shift+cmd+ctrl+down",
+        "win": "shift+ctrl+alt+PageDown",
+        "linux": "shift+ctrl+alt+PageDown",
         "when": "editorTextFocus"
       }
     ]
