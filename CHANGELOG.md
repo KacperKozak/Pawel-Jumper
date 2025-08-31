@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Add: `pawel-jumper.select-up` and `pawel-jumper.select-down` — extend selection to previous/next blank line
+- Change: Rename `pawel-jumper.hop-prev` to `pawel-jumper.hop-up` and `pawel-jumper.hop-next` to `pawel-jumper.hop-down`
+- Change: Update default keybindings
+  - macOS: `Hop Up` `Cmd+Ctrl+Up`, `Hop Down` `Cmd+Ctrl+Down`, `Select Up` `Shift+Cmd+Ctrl+Up`, `Select Down` `Shift+Cmd+Ctrl+Down`
+  - Windows/Linux: `Hop Up` `Ctrl+Alt+PageUp`, `Hop Down` `Ctrl+Alt+PageDown`, `Select Up` `Shift+Ctrl+Alt+PageUp`, `Select Down` `Shift+Ctrl+Alt+PageDown`
+- Remove: `pawel-jumper.select` command (replaced by hop/select family)
+- Docs: Update `README.md` with platform-specific keybindings
+
 ## 1.0.0
 
 - Add: Jump between blank lines with `Shift+Alt+Up/Down` (no wrap)
