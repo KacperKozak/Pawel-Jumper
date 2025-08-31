@@ -57,13 +57,13 @@
   },
   "scripts": {
     "start": "bun run compile && bun run vscode",
-    "vscode": "code --extensionDevelopmentPath=. --user-data-dir=.vscode-pawel-jumper-dev --extensions-dir=.vscode-pawel-jumper-extensions",
+    "vscode": "code --new-window --extensionDevelopmentPath=\"$PWD\" --user-data-dir=\"$PWD/.vscode-pawel-jumper-dev\" --extensions-dir=\"$PWD/.vscode-pawel-jumper-extensions\"",
     "compile": "bun x tsc -p ./",
     "watch": "bun x tsc -watch -p ./",
     "lint": "oxlint --fix",
     "format": "prettier --write .",
     "ts": "bun x tsc --noEmit",
-    "test": "echo 'No unit tests'",
+    "test": "bun test ./src/utils/sections.test.ts",
     "test:e2e": "node ./out/test/runTest.js",
     "prepare": "husky",
     "lint-staged": "lint-staged"
@@ -75,6 +75,7 @@
     "@types/node": "^20",
     "@types/vscode": "^1.79.0",
     "@vscode/test-electron": "^2.3.2",
+    "dedent": "^1.6.0",
     "glob": "^8.1.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
