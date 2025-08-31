@@ -1,7 +1,5 @@
-export const escapeRegExp = (value: string) =>
-    value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
-export const isBlankLine = (text: string) => text.trim().length === 0
+import { escapeRegExp } from '../utils/regexp'
+import { isBlankLine } from '../utils/string'
 
 export const getBlankLineIndicesFromLines = (lines: string[]): number[] => {
     const indices: number[] = []
@@ -29,4 +27,24 @@ export const findOccurrencesInLines = (
         }
     }
     return occurrences
+}
+
+export const findNextBlankLineIndexOrEnd = (
+    lines: string[],
+    currentLine: number,
+): number => {
+    for (let i = currentLine + 1; i < lines.length; i++) {
+        if (isBlankLine(lines[i] ?? '')) return i
+    }
+    return Math.max(0, lines.length - 1)
+}
+
+export const findPreviousBlankLineIndexOrStart = (
+    lines: string[],
+    currentLine: number,
+): number => {
+    for (let i = currentLine - 1; i >= 0; i--) {
+        if (isBlankLine(lines[i] ?? '')) return i
+    }
+    return 0
 }

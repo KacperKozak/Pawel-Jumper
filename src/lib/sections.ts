@@ -1,7 +1,6 @@
 import * as vscode from 'vscode'
-
-export const escapeRegExp = (value: string) =>
-    value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+import { isBlankLine } from '../utils/string'
+import { escapeRegExp } from '../utils/regexp'
 
 export const findOccurrences = (
     document: vscode.TextDocument,
@@ -67,8 +66,6 @@ export const jumpToPreviousOccurrence = (editor: vscode.TextEditor, term: string
     editor.revealRange(new vscode.Range(start, end), vscode.TextEditorRevealType.InCenter)
 }
 
-export const isBlankLine = (text: string) => text.trim().length === 0
-
 export const jumpToNextBlankLine = (editor: vscode.TextEditor) => {
     const doc = editor.document
     const current = editor.selection.active
@@ -83,7 +80,10 @@ export const jumpToNextBlankLine = (editor: vscode.TextEditor) => {
             return
         }
     }
-    // no wrap
+    // If no blank line found, jump to end of file
+    const eof = new vscode.Position(doc.lineCount - 1, 0)
+    editor.selection = new vscode.Selection(eof, eof)
+    editor.revealRange(new vscode.Range(eof, eof), vscode.TextEditorRevealType.InCenter)
 }
 
 export const jumpToPreviousBlankLine = (editor: vscode.TextEditor) => {
@@ -100,32 +100,10 @@ export const jumpToPreviousBlankLine = (editor: vscode.TextEditor) => {
             return
         }
     }
-    // no wrap
-}
-
-// Pure helpers for tests
-export const findOccurrencesInLines = (
-    lines: string[],
-    term: string,
-): { line: number; character: number }[] => {
-    const occurrences: { line: number; character: number }[] = []
-    const isWordish = /^[A-Za-z0-9_]+$/.test(term)
-    const pattern = isWordish ? `\\b${escapeRegExp(term)}\\b` : escapeRegExp(term)
-    const regex = new RegExp(pattern)
-    for (let i = 0; i < lines.length; i++) {
-        const text = lines[i] ?? ''
-        const idx = text.search(regex)
-        if (idx !== -1) occurrences.push({ line: i, character: idx })
-    }
-    return occurrences
-}
-
-export const getBlankLineIndicesFromLines = (lines: string[]): number[] => {
-    const indices: number[] = []
-    for (let i = 0; i < lines.length; i++) {
-        if (isBlankLine(lines[i] ?? '')) indices.push(i)
-    }
-    return indices
+    // If no blank line found, jump to start of file
+    const bof = new vscode.Position(0, 0)
+    editor.selection = new vscode.Selection(bof, bof)
+    editor.revealRange(new vscode.Range(bof, bof), vscode.TextEditorRevealType.InCenter)
 }
 
 export const selectToPreviousBlankLine = (editor: vscode.TextEditor) => {
@@ -139,7 +117,7 @@ export const selectToPreviousBlankLine = (editor: vscode.TextEditor) => {
             break
         }
     }
-    if (!target) return
+    if (!target) target = new vscode.Position(0, 0)
     editor.selection = new vscode.Selection(anchor, target)
     editor.revealRange(
         new vscode.Range(anchor, target),
@@ -158,7 +136,7 @@ export const selectToNextBlankLine = (editor: vscode.TextEditor) => {
             break
         }
     }
-    if (!target) return
+    if (!target) target = new vscode.Position(doc.lineCount - 1, 0)
     editor.selection = new vscode.Selection(anchor, target)
     editor.revealRange(
         new vscode.Range(anchor, target),
