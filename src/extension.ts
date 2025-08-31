@@ -8,7 +8,7 @@ import {
 
 export const activate = (context: vscode.ExtensionContext) => {
     const commands = [
-        vscode.commands.registerCommand('pawel-jumper.move-up', () => {
+        vscode.commands.registerCommand('pawel-jumper.hop-prev', () => {
             const editor = vscode.window.activeTextEditor
             if (!editor) return
             const sel = editor.selection
@@ -16,7 +16,7 @@ export const activate = (context: vscode.ExtensionContext) => {
             if (selectedText.length > 0) jumpToPreviousOccurrence(editor, selectedText)
             else jumpToPreviousBlankLine(editor)
         }),
-        vscode.commands.registerCommand('pawel-jumper.move-down', () => {
+        vscode.commands.registerCommand('pawel-jumper.hop-next', () => {
             const editor = vscode.window.activeTextEditor
             if (!editor) return
             const sel = editor.selection

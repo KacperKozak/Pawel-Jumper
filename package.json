@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "name": "pawel-jumper",
   "displayName": "Pawel Jumper",
   "publisher": "code-cooking",
@@ -17,29 +17,29 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:pawel-jumper.move-up",
-    "onCommand:pawel-jumper.move-down"
+    "onCommand:pawel-jumper.hop-prev",
+    "onCommand:pawel-jumper.hop-next"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "pawel-jumper.move-up",
-        "title": "Pawel Jumper: Move Up"
+        "command": "pawel-jumper.hop-prev",
+        "title": "Pawel Jumper: Hop Previous"
       },
       {
-        "command": "pawel-jumper.move-down",
-        "title": "Pawel Jumper: Move Down"
+        "command": "pawel-jumper.hop-next",
+        "title": "Pawel Jumper: Hop Next"
       }
     ],
     "keybindings": [
       {
-        "command": "pawel-jumper.move-up",
+        "command": "pawel-jumper.hop-prev",
         "mac": "shift+alt+up",
         "when": "editorTextFocus"
       },
       {
-        "command": "pawel-jumper.move-down",
+        "command": "pawel-jumper.hop-next",
         "mac": "shift+alt+down",
         "when": "editorTextFocus"
       }
