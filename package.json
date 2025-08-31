@@ -18,9 +18,7 @@
   ],
   "activationEvents": [
     "onCommand:pawel-jumper.move-up",
-    "onCommand:pawel-jumper.move-down",
-    "onCommand:pawel-jumper.selected-prev",
-    "onCommand:pawel-jumper.selected-next"
+    "onCommand:pawel-jumper.move-down"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -32,14 +30,6 @@
       {
         "command": "pawel-jumper.move-down",
         "title": "Pawel Jumper: Move Down"
-      },
-      {
-        "command": "pawel-jumper.selected-prev",
-        "title": "Pawel Jumper: Select Previous"
-      },
-      {
-        "command": "pawel-jumper.selected-next",
-        "title": "Pawel Jumper: Select Next"
       }
     ],
     "keybindings": [
@@ -63,7 +53,7 @@
     "lint": "oxlint --fix",
     "format": "prettier --write .",
     "ts": "bun x tsc --noEmit",
-    "test": "bun test ./src/utils/sections.test.ts",
+    "test": "bun test ./src/lib/ ./src/utils/",
     "test:e2e": "node ./out/test/runTest.js",
     "prepare": "husky",
     "lint-staged": "lint-staged"

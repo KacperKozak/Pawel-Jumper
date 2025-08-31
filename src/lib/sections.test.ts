@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test'
 import dedent from 'dedent'
-import { getBlankLineIndicesFromLines, findOccurrencesInLines } from './pure'
+import { getBlankLineIndicesFromLines, findOccurrencesInLines } from '../utils/pure'
 
 const sampleReactComponent = dedent`
   import React, { useState, useEffect, useCallback } from 'react'
@@ -33,6 +33,19 @@ describe('blank-line and occurrence helpers', () => {
         const occ = findOccurrencesInLines(sampleReactComponent, 'useEffect')
         expect(occ.length).toBeGreaterThan(0)
         expect(occ[0].line).toBeGreaterThanOrEqual(0)
+    })
+
+    it('finds multiple matches on the same line', () => {
+        const lines = dedent`
+          const ref = useRef(); const other = { ref };
+          <div ref={ref} data-ref="x" />
+        `.split('\n')
+        const occ = findOccurrencesInLines(lines, 'ref')
+        // Expect at least 4 matches across two lines
+        expect(occ.length).toBeGreaterThanOrEqual(4)
+        // Ensure multiple entries on the same first line
+        const firstLineMatches = occ.filter((o) => o.line === 0)
+        expect(firstLineMatches.length).toBeGreaterThanOrEqual(2)
     })
 
     it('does not crash on empty input', () => {
