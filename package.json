@@ -17,6 +17,12 @@
     "Other"
   ],
   "main": "./out/extension.js",
+  "activationEvents": [
+    "onCommand:pawel-jumper.hop-up",
+    "onCommand:pawel-jumper.hop-down",
+    "onCommand:pawel-jumper.select-up",
+    "onCommand:pawel-jumper.select-down"
+  ],
   "contributes": {
     "configuration": {
       "type": "object",
