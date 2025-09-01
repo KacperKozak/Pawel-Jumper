@@ -58,29 +58,29 @@
       {
         "command": "pawel-jumper.hop-up",
         "mac": "cmd+ctrl+up",
-        "win": "ctrl+alt+PageUp",
-        "linux": "ctrl+alt+PageUp",
+        "win": "ctrl+alt+up",
+        "linux": "ctrl+alt+up",
         "when": "editorTextFocus"
       },
       {
         "command": "pawel-jumper.hop-down",
         "mac": "cmd+ctrl+down",
-        "win": "ctrl+alt+PageDown",
-        "linux": "ctrl+alt+PageDown",
+        "win": "ctrl+alt+down",
+        "linux": "ctrl+alt+down",
         "when": "editorTextFocus"
       },
       {
         "command": "pawel-jumper.select-up",
         "mac": "shift+cmd+ctrl+up",
-        "win": "shift+ctrl+alt+PageUp",
-        "linux": "shift+ctrl+alt+PageUp",
+        "win": "shift+ctrl+alt+up",
+        "linux": "shift+ctrl+alt+up",
         "when": "editorTextFocus"
       },
       {
         "command": "pawel-jumper.select-down",
         "mac": "shift+cmd+ctrl+down",
-        "win": "shift+ctrl+alt+PageDown",
-        "linux": "shift+ctrl+alt+PageDown",
+        "win": "shift+ctrl+alt+down",
+        "linux": "shift+ctrl+alt+down",
         "when": "editorTextFocus"
       }
     ]

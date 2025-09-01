@@ -30,10 +30,10 @@ MacOS:
 
 Windows/Linux:
 
-- Pawel Jumper: Hop Up — `Ctrl+Alt+PageUp`
-- Pawel Jumper: Hop Down — `Ctrl+Alt+PageDown`
-- Pawel Jumper: Select Up — `Shift+Ctrl+Alt+PageUp`
-- Pawel Jumper: Select Down — `Shift+Ctrl+Alt+PageDown`
+- Pawel Jumper: Hop Up — `Ctrl+Alt+Up`
+- Pawel Jumper: Hop Down — `Ctrl+Alt+Down`
+- Pawel Jumper: Select Up — `Shift+Ctrl+Alt+Up`
+- Pawel Jumper: Select Down — `Shift+Ctrl+Alt+Down`
 
 Use the Command Palette to invoke the commands by name or customize keybindings in your settings.
 
