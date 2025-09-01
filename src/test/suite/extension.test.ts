@@ -118,6 +118,48 @@ suite('Pawel Jumper Integration', () => {
         await vscode.commands.executeCommand('workbench.action.closeAllEditors')
     })
 
+    test('selection mirrors hop logic on large blocks (down)', async () => {
+        const lines = ['x', '']
+            .concat(Array.from({ length: 10 }, (_, i) => `${i + 1}`))
+            .concat(['', 'y'])
+        const editor = await openWithContent(lines)
+        await vscode.workspace
+            .getConfiguration('pawel-jumper')
+            .update('maxJumpDistance', 5, vscode.ConfigurationTarget.Global)
+        // Place cursor between filler and block
+        const start = new vscode.Position(1, 0)
+        editor.selection = new vscode.Selection(start, start)
+        await vscode.commands.executeCommand('pawel-jumper.select-down')
+        // should select to block center at absolute line 6
+        assert.strictEqual(editor.selection.anchor.line, 1)
+        assert.strictEqual(editor.selection.active.line, 6)
+        await vscode.commands.executeCommand('pawel-jumper.select-down')
+        // then extend to trailing blank at absolute line length-2
+        assert.strictEqual(editor.selection.active.line, lines.length - 2)
+        await vscode.commands.executeCommand('workbench.action.closeAllEditors')
+    })
+
+    test('selection mirrors hop logic on large blocks (up)', async () => {
+        const lines = ['x', '']
+            .concat(Array.from({ length: 10 }, (_, i) => `${i + 1}`))
+            .concat(['', 'y'])
+        const editor = await openWithContent(lines)
+        await vscode.workspace
+            .getConfiguration('pawel-jumper')
+            .update('maxJumpDistance', 5, vscode.ConfigurationTarget.Global)
+        // Place cursor between block and trailing filler
+        const start = new vscode.Position(lines.length - 2, 0)
+        editor.selection = new vscode.Selection(start, start)
+        await vscode.commands.executeCommand('pawel-jumper.select-up')
+        // should select to block center at absolute line 6
+        assert.strictEqual(editor.selection.anchor.line, lines.length - 2)
+        assert.strictEqual(editor.selection.active.line, 6)
+        await vscode.commands.executeCommand('pawel-jumper.select-up')
+        // then extend to leading blank at absolute line 1
+        assert.strictEqual(editor.selection.active.line, 1)
+        await vscode.commands.executeCommand('workbench.action.closeAllEditors')
+    })
+
     test('max jump distance splits large blocks into internal stops', async () => {
         const lines = ['']
             .concat(Array.from({ length: 16 }, (_, i) => `l${i + 1}`))

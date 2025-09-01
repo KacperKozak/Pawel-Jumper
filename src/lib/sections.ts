@@ -85,14 +85,13 @@ export const selectToPreviousBlankLine = (editor: vscode.TextEditor) => {
     const doc = editor.document
     const current = editor.selection.active
     const anchor = editor.selection.isEmpty ? current : editor.selection.anchor
-    let target: vscode.Position | undefined
-    for (let i = current.line - 1; i >= 0; i--) {
-        if (isBlankLine(doc.lineAt(i).text)) {
-            target = new vscode.Position(i, 0)
-            break
-        }
-    }
-    if (!target) target = new vscode.Position(0, 0)
+    const maxJumpDistance = vscode.workspace
+        .getConfiguration('pawel-jumper')
+        .get<number>('maxJumpDistance', 5)
+    const lines: string[] = []
+    for (let i = 0; i < doc.lineCount; i++) lines.push(doc.lineAt(i).text)
+    const prevLine = findPreviousStopLine(lines, current.line, maxJumpDistance)
+    const target = new vscode.Position(prevLine, 0)
     editor.selection = new vscode.Selection(anchor, target)
     editor.revealRange(
         new vscode.Range(anchor, target),
@@ -104,14 +103,13 @@ export const selectToNextBlankLine = (editor: vscode.TextEditor) => {
     const doc = editor.document
     const current = editor.selection.active
     const anchor = editor.selection.isEmpty ? current : editor.selection.anchor
-    let target: vscode.Position | undefined
-    for (let i = current.line + 1; i < doc.lineCount; i++) {
-        if (isBlankLine(doc.lineAt(i).text)) {
-            target = new vscode.Position(i, 0)
-            break
-        }
-    }
-    if (!target) target = new vscode.Position(doc.lineCount - 1, 0)
+    const maxJumpDistance = vscode.workspace
+        .getConfiguration('pawel-jumper')
+        .get<number>('maxJumpDistance', 5)
+    const lines: string[] = []
+    for (let i = 0; i < doc.lineCount; i++) lines.push(doc.lineAt(i).text)
+    const nextLine = findNextStopLine(lines, current.line, maxJumpDistance)
+    const target = new vscode.Position(nextLine, 0)
     editor.selection = new vscode.Selection(anchor, target)
     editor.revealRange(
         new vscode.Range(anchor, target),

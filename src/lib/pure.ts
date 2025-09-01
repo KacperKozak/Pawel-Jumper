@@ -102,6 +102,36 @@ export const indexOfPreviousBlankLineOrStart = (
     return -1
 }
 
+export const findBlankRunBoundsStartingAt = (
+    lines: string[],
+    startIndex: number,
+): { start: number; end: number } => {
+    let end = startIndex
+    while (end + 1 < lines.length && isBlankLine(lines[end + 1] ?? '')) end++
+    return { start: startIndex, end }
+}
+
+export const findBlankRunBoundsEndingAt = (
+    lines: string[],
+    endIndex: number,
+): { start: number; end: number } => {
+    let start = endIndex
+    while (start - 1 >= 0 && isBlankLine(lines[start - 1] ?? '')) start--
+    return { start, end: endIndex }
+}
+
+export const getBlankRunBoundsAtIndex = (
+    lines: string[],
+    index: number,
+): { start: number; end: number } | null => {
+    if (!isBlankLine(lines[index] ?? '')) return null
+    let start = index
+    while (start - 1 >= 0 && isBlankLine(lines[start - 1] ?? '')) start--
+    let end = index
+    while (end + 1 < lines.length && isBlankLine(lines[end + 1] ?? '')) end++
+    return { start, end }
+}
+
 export const computeInternalStops = (
     firstContentLine: number,
     lastContentLine: number,
@@ -133,20 +163,53 @@ export const findNextStopLine = (
     currentLine: number,
     maxJumpDistance: number,
 ): number => {
+    const currentIsBlank = isBlankLine(lines[currentLine] ?? '')
+    if (currentIsBlank) {
+        const bounds = getBlankRunBoundsAtIndex(lines, currentLine)!
+        const center = Math.floor((bounds.start + bounds.end) / 2)
+        if (currentLine < center) return center
+        // After center: move to next content block or trailing blank group center
+        const nextBlankAfterRun = indexOfNextBlankLineOrEnd(lines, bounds.end)
+        const firstContentAfterRun = bounds.end + 1
+        const lastContentAfterRun = Math.min(
+            nextBlankAfterRun === lines.length ? lines.length - 1 : nextBlankAfterRun - 1,
+            lines.length - 1,
+        )
+        if (lastContentAfterRun >= firstContentAfterRun) {
+            const internal = computeInternalStops(
+                firstContentAfterRun,
+                lastContentAfterRun,
+                maxJumpDistance,
+            )
+            for (const s of internal) if (s > currentLine) return s
+        }
+        if (nextBlankAfterRun === lines.length) return lines.length - 1
+        const nextBlankRun = findBlankRunBoundsStartingAt(lines, nextBlankAfterRun)
+        return Math.floor((nextBlankRun.start + nextBlankRun.end) / 2)
+    }
+
     const nextBlank = indexOfNextBlankLineOrEnd(lines, currentLine)
     const startBlank = indexOfPreviousBlankLineOrStart(lines, currentLine)
-    const currentIsBlank = isBlankLine(lines[currentLine] ?? '')
-    const firstContent = Math.max((currentIsBlank ? currentLine : startBlank) + 1, 0)
+    const firstContent = Math.max(startBlank + 1, 0)
     const lastContent = Math.min(
         nextBlank === lines.length ? lines.length - 1 : nextBlank - 1,
         lines.length - 1,
     )
     if (lastContent < firstContent) {
-        // no content block, so boundary is either blank line or EOF
-        return nextBlank === lines.length ? lines.length - 1 : nextBlank
+        // no content block, so boundary is either EOF or next blank group center
+        if (nextBlank === lines.length) return lines.length - 1
+        const run = findBlankRunBoundsStartingAt(lines, nextBlank)
+        return Math.floor((run.start + run.end) / 2)
     }
     const internal = computeInternalStops(firstContent, lastContent, maxJumpDistance)
-    const boundaryStop = nextBlank === lines.length ? lines.length - 1 : nextBlank
+    const boundaryStop =
+        nextBlank === lines.length
+            ? lines.length - 1
+            : Math.floor(
+                  (findBlankRunBoundsStartingAt(lines, nextBlank).start +
+                      findBlankRunBoundsStartingAt(lines, nextBlank).end) /
+                      2,
+              )
     const candidates = [...internal, boundaryStop]
     for (const c of candidates) {
         if (c > currentLine) return c
@@ -159,9 +222,31 @@ export const findPreviousStopLine = (
     currentLine: number,
     maxJumpDistance: number,
 ): number => {
+    const currentIsBlank = isBlankLine(lines[currentLine] ?? '')
+    if (currentIsBlank) {
+        const bounds = getBlankRunBoundsAtIndex(lines, currentLine)!
+        const center = Math.floor((bounds.start + bounds.end) / 2)
+        if (currentLine > center) return center
+        // Before center: move to previous content block or leading blank group center
+        const prevBlankBeforeRun = indexOfPreviousBlankLineOrStart(lines, bounds.start)
+        const firstContentBeforeRun = Math.max(prevBlankBeforeRun + 1, 0)
+        const lastContentBeforeRun = bounds.start - 1
+        if (lastContentBeforeRun >= firstContentBeforeRun) {
+            const internal = computeInternalStops(
+                firstContentBeforeRun,
+                lastContentBeforeRun,
+                maxJumpDistance,
+            )
+            for (let i = internal.length - 1; i >= 0; i--)
+                if (internal[i] < currentLine) return internal[i]
+        }
+        if (prevBlankBeforeRun < 0) return 0
+        const prevBlankRun = findBlankRunBoundsEndingAt(lines, prevBlankBeforeRun)
+        return Math.floor((prevBlankRun.start + prevBlankRun.end) / 2)
+    }
+
     const prevBlank = indexOfPreviousBlankLineOrStart(lines, currentLine)
     const nextBlank = indexOfNextBlankLineOrEnd(lines, currentLine)
-    const currentIsBlank = isBlankLine(lines[currentLine] ?? '')
     const firstContent = Math.max(prevBlank + 1, 0)
     const lastContent = Math.min(
         (currentIsBlank ? currentLine : nextBlank) === lines.length
@@ -170,11 +255,20 @@ export const findPreviousStopLine = (
         lines.length - 1,
     )
     if (lastContent < firstContent) {
-        // no content block, so boundary is either blank line or BOF
-        return prevBlank < 0 ? 0 : prevBlank
+        // no content block, so boundary is either BOF or previous blank group center
+        if (prevBlank < 0) return 0
+        const run = findBlankRunBoundsEndingAt(lines, prevBlank)
+        return Math.floor((run.start + run.end) / 2)
     }
     const internal = computeInternalStops(firstContent, lastContent, maxJumpDistance)
-    const boundaryStop = prevBlank < 0 ? 0 : prevBlank
+    const boundaryStop =
+        prevBlank < 0
+            ? 0
+            : Math.floor(
+                  (findBlankRunBoundsEndingAt(lines, prevBlank).start +
+                      findBlankRunBoundsEndingAt(lines, prevBlank).end) /
+                      2,
+              )
     const candidates = [boundaryStop, ...internal]
     let chosen = boundaryStop
     for (const c of candidates) {
