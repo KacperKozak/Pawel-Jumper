@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.1.2
+
+- Fix: Update Windows/Linux default keybindings to use arrow keys
+  - `Hop Up` `Ctrl+Alt+Up`, `Hop Down` `Ctrl+Alt+Down`, `Select Up` `Shift+Ctrl+Alt+Up`, `Select Down` `Shift+Ctrl+Alt+Down`
+
 ## 1.1.0
 
 - Add: `pawel-jumper.select-up` and `pawel-jumper.select-down` — extend selection to previous/next blank line
