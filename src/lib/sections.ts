@@ -4,6 +4,8 @@ import {
     findOccurrencesInLines,
     findNextOccurrenceIndexAfterBase,
     findPreviousOccurrenceIndexBeforeBase,
+    findNextStopLine,
+    findPreviousStopLine,
 } from './pure'
 
 export const findOccurrences = (
@@ -54,41 +56,29 @@ export const jumpToPreviousOccurrence = (editor: vscode.TextEditor, term: string
 export const jumpToNextBlankLine = (editor: vscode.TextEditor) => {
     const doc = editor.document
     const current = editor.selection.active
-    for (let i = current.line + 1; i < doc.lineCount; i++) {
-        if (isBlankLine(doc.lineAt(i).text)) {
-            const pos = new vscode.Position(i, 0)
-            editor.selection = new vscode.Selection(pos, pos)
-            editor.revealRange(
-                new vscode.Range(pos, pos),
-                vscode.TextEditorRevealType.InCenter,
-            )
-            return
-        }
-    }
-    // If no blank line found, jump to end of file
-    const eof = new vscode.Position(doc.lineCount - 1, 0)
-    editor.selection = new vscode.Selection(eof, eof)
-    editor.revealRange(new vscode.Range(eof, eof), vscode.TextEditorRevealType.InCenter)
+    const maxJumpDistance = vscode.workspace
+        .getConfiguration('pawel-jumper')
+        .get<number>('maxJumpDistance', 5)
+    const lines: string[] = []
+    for (let i = 0; i < doc.lineCount; i++) lines.push(doc.lineAt(i).text)
+    const nextLine = findNextStopLine(lines, current.line, maxJumpDistance)
+    const pos = new vscode.Position(nextLine, 0)
+    editor.selection = new vscode.Selection(pos, pos)
+    editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter)
 }
 
 export const jumpToPreviousBlankLine = (editor: vscode.TextEditor) => {
     const doc = editor.document
     const current = editor.selection.active
-    for (let i = current.line - 1; i >= 0; i--) {
-        if (isBlankLine(doc.lineAt(i).text)) {
-            const pos = new vscode.Position(i, 0)
-            editor.selection = new vscode.Selection(pos, pos)
-            editor.revealRange(
-                new vscode.Range(pos, pos),
-                vscode.TextEditorRevealType.InCenter,
-            )
-            return
-        }
-    }
-    // If no blank line found, jump to start of file
-    const bof = new vscode.Position(0, 0)
-    editor.selection = new vscode.Selection(bof, bof)
-    editor.revealRange(new vscode.Range(bof, bof), vscode.TextEditorRevealType.InCenter)
+    const maxJumpDistance = vscode.workspace
+        .getConfiguration('pawel-jumper')
+        .get<number>('maxJumpDistance', 5)
+    const lines: string[] = []
+    for (let i = 0; i < doc.lineCount; i++) lines.push(doc.lineAt(i).text)
+    const prevLine = findPreviousStopLine(lines, current.line, maxJumpDistance)
+    const pos = new vscode.Position(prevLine, 0)
+    editor.selection = new vscode.Selection(pos, pos)
+    editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter)
 }
 
 export const selectToPreviousBlankLine = (editor: vscode.TextEditor) => {

@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
   - Windows/Linux: `Hop Up` `Ctrl+Alt+PageUp`, `Hop Down` `Ctrl+Alt+PageDown`, `Select Up` `Shift+Ctrl+Alt+PageUp`, `Select Down` `Shift+Ctrl+Alt+PageDown`
 - Remove: `pawel-jumper.select` command (replaced by hop/select family)
 - Docs: Update `README.md` with platform-specific keybindings
+- Add: Max jump distance with `pawel-jumper.maxJumpDistance` (default `5`)
+  - Large blocks are split into internal stops; jumps land at the center first, then exit the block
+  - Works in both directions for `pawel-jumper.hop-up` and `pawel-jumper.hop-down`
+  - Handles files with or without leading/trailing blank lines
 
 ## 1.0.0
 

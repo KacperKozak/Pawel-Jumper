@@ -7,6 +7,9 @@ import {
     findPreviousBlankLineIndexOrStart,
     findNextOccurrenceIndexAfterBase,
     findPreviousOccurrenceIndexBeforeBase,
+    computeInternalStops,
+    findNextStopLine,
+    findPreviousStopLine,
 } from './pure'
 
 const sampleReactComponent = dedent`
@@ -73,5 +76,107 @@ describe('pure', () => {
         const lines = ['a', '', 'b', '', 'c']
         expect(findNextBlankLineIndexOrEnd(lines, 0)).toEqual(1)
         expect(findPreviousBlankLineIndexOrStart(lines, 4)).toEqual(3)
+    })
+
+    it('computes internal stops for large blocks', () => {
+        // content lines 1..11 inside blanks at 0 and 12 with max=5 => one internal stop ~ middle
+        const lines = ['']
+            .concat(Array.from({ length: 11 }, (_, i) => `l${i + 1}`))
+            .concat([''])
+        const first = 1
+        const last = 11
+        const stops = computeInternalStops(first, last, 5)
+        expect(stops.length).toBe(1)
+        expect(stops[0]).toBeGreaterThanOrEqual(5)
+        expect(stops[0]).toBeLessThanOrEqual(7)
+    })
+
+    it('next/previous stop line respects max jump distance', () => {
+        const lines = ['']
+            .concat(Array.from({ length: 16 }, (_, i) => `l${i + 1}`))
+            .concat([''])
+        // max 5 should produce two internal stops roughly at 5 and 10
+        const next1 = findNextStopLine(lines, 1, 5)
+        expect(next1).toBeGreaterThanOrEqual(5)
+        expect(next1).toBeLessThanOrEqual(6)
+        const next2 = findNextStopLine(lines, next1, 5)
+        expect(next2).toBeGreaterThanOrEqual(10)
+        expect(next2).toBeLessThanOrEqual(11)
+        const next3 = findNextStopLine(lines, next2, 5)
+        // Final next should be trailing blank at index length-1
+        expect(next3).toEqual(lines.length - 1)
+
+        // Going backwards
+        const prev1 = findPreviousStopLine(lines, lines.length - 2, 5)
+        expect(prev1).toBeGreaterThanOrEqual(10)
+        expect(prev1).toBeLessThanOrEqual(11)
+        const prev2 = findPreviousStopLine(lines, prev1, 5)
+        expect(prev2).toBeGreaterThanOrEqual(5)
+        expect(prev2).toBeLessThanOrEqual(6)
+        const prev3 = findPreviousStopLine(lines, prev2, 5)
+        expect(prev3).toEqual(0)
+    })
+    it('11-line block goes to center then to trailing blank', () => {
+        const lines = ['']
+            .concat(Array.from({ length: 11 }, (_, i) => `l${i + 1}`))
+            .concat([''])
+        const first = findNextStopLine(lines, 1, 5)
+        expect(first).toBeGreaterThanOrEqual(5)
+        expect(first).toBeLessThanOrEqual(7)
+        const second = findNextStopLine(lines, first, 5)
+        expect(second).toEqual(lines.length - 1)
+    })
+
+    it('11-line block upward: from end to center to leading blank', () => {
+        const lines = ['']
+            .concat(Array.from({ length: 11 }, (_, i) => `l${i + 1}`))
+            .concat([''])
+        const prev1 = findPreviousStopLine(lines, lines.length - 2, 5)
+        expect(prev1).toBeGreaterThanOrEqual(5)
+        expect(prev1).toBeLessThanOrEqual(7)
+        const prev2 = findPreviousStopLine(lines, prev1, 5)
+        expect(prev2).toEqual(0)
+    })
+
+    it('10-line block without edge blanks: start -> center -> end', () => {
+        const lines = Array.from({ length: 10 }, (_, i) => `${i + 1}`)
+        const first = findNextStopLine(lines, 0, 5)
+        expect(first).toEqual(4)
+        const second = findNextStopLine(lines, first, 5)
+        expect(second).toEqual(lines.length - 1)
+    })
+
+    it('10-line block without edge blanks: end -> center -> start', () => {
+        const lines = Array.from({ length: 10 }, (_, i) => `${i + 1}`)
+        const prev1 = findPreviousStopLine(lines, lines.length - 1, 5)
+        expect(prev1).toEqual(4)
+        const prev2 = findPreviousStopLine(lines, prev1, 5)
+        expect(prev2).toEqual(0)
+    })
+
+    it('10-line block with leading blank: start -> center -> trailing blank', () => {
+        const lines = [''].concat(Array.from({ length: 10 }, (_, i) => `${i + 1}`))
+        const first = findNextStopLine(lines, 0, 5)
+        expect(first).toEqual(5) // center should be line 5 (1-based 6th), but index 5 due to leading blank
+        const second = findNextStopLine(lines, first, 5)
+        expect(second).toEqual(lines.length - 1) // trailing boundary blank
+    })
+
+    it('10-line block with trailing blank: start -> center -> trailing blank', () => {
+        const lines = Array.from({ length: 10 }, (_, i) => `${i + 1}`).concat([''])
+        const first = findNextStopLine(lines, 0, 5)
+        expect(first).toEqual(4)
+        const second = findNextStopLine(lines, first, 5)
+        expect(second).toEqual(lines.length - 1)
+    })
+
+    it('10-line block with both edge blanks: start blank -> center -> trailing blank', () => {
+        const lines = ['x', '']
+            .concat(Array.from({ length: 10 }, (_, i) => `${i + 1}`))
+            .concat(['', 'y'])
+        const first = findNextStopLine(lines, 1, 5) // between x and big block
+        expect(first).toEqual(6) // absolute index considering leading filler
+        const second = findNextStopLine(lines, first, 5)
+        expect(second).toEqual(lines.length - 2) // trailing blank between block and trailing filler
     })
 })

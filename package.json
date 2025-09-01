@@ -18,6 +18,18 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Pawel Jumper",
+      "properties": {
+        "pawel-jumper.maxJumpDistance": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "description": "Maximum number of lines to jump within a block before splitting into internal stops."
+        }
+      }
+    },
     "commands": [
       {
         "command": "pawel-jumper.hop-up",
