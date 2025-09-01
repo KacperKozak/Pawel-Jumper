@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 1.1.0
 
 - Add: `pawel-jumper.select-up` and `pawel-jumper.select-down` — extend selection to previous/next blank line
 - Change: Rename `pawel-jumper.hop-prev` to `pawel-jumper.hop-up` and `pawel-jumper.hop-next` to `pawel-jumper.hop-down`
