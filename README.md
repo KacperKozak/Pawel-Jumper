@@ -47,3 +47,34 @@ Use the Command Palette to invoke the commands by name or customize keybindings 
 
 - Update `package.json` metadata as needed
 - Publish via VS Code Marketplace or Open VSX
+
+## Bind as `cmd+↓↑` for MacOS
+
+To travel faster and more easily, you can bind this directly to `cmd`.
+Put this in your `keybindings.json`:
+
+```jsonc
+    //
+    // Fast travel
+    //
+    {
+        "key": "cmd+up",
+        "command": "pawel-jumper.hop-up",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "cmd+down",
+        "command": "pawel-jumper.hop-down",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "cmd+shift+up",
+        "command": "pawel-jumper.select-up",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "cmd+shift+down",
+        "command": "pawel-jumper.select-down",
+        "when": "editorTextFocus"
+    }
+```
